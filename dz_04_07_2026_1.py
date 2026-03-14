@@ -6,9 +6,17 @@ attempt = 1
 start_time = 0
 end_time = 0
 
+f = open('results.txt', 'a')
+
 num1 = 0
 num2 = 100
 number = 0
+
+def writing_to_file():
+    global num1, num2, number, attempt, start_time, end_time
+
+    f.write(f'пользователь угадал число от {num1} до {num2}: "{number}" за {round(end_time - start_time, 2)} секунд с {attempt} попытки\n')
+    f.close()
 
 def create_num():
     global num1, num2, number, start_time, end_time
@@ -36,7 +44,10 @@ def user_input():
         input_num = int(input('\nугадай число из твоего диапазона --- '))
         if input_num == number:
             end_time = time.perf_counter()
-            print(f'\nты угадал загаданое число за {end_time - start_time} секунд')
+
+            writing_to_file()
+
+            print(f'\nты угадал загаданое число за {round(end_time - start_time, 2)} секунд')
         else:
             if number > input_num:
                 print('\nзагаданое число больше твоего, попробуй еще раз --- ')
@@ -56,4 +67,3 @@ def main():
 
 
 main()
-
