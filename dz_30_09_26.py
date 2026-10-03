@@ -2,15 +2,21 @@ import random
 
 #col, ro = 0, 0
 
-rows, colms = int(input("размеры поля шир (больше 6)")), int(input("размеры поля выс (больше 6)"))
+try:
+    rows, colms = int(input("размеры поля шир (больше 10)")), int(input("размеры поля выс (больше 10)"))
 
-cef = int(input("плотность от 1 до 10"))
+    cef = int(input("плотность от 1 до 10"))
+
+    islands_count = random.randint(round((rows * colms) * cef / 200), round((rows * colms) * cef / 200) + 2)
+except ValueError:
+    rows, colms, cef, islands_count = 0, 0, 0, 0
+    print("ValueError")
 
 del_point, add_point, main_point, island_borders, add_point_all_islands = [], [], [], [], []
 
 matrix = [["0" for c in range(colms)]for r in range(rows)]
 
-islands_count = random.randint(round((rows*colms)*cef/200), round((rows*colms)*cef/200)+2)
+
 
 def remove_double(lst):
     res_list = []
