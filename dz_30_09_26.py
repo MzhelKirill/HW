@@ -84,7 +84,7 @@ def island_gen():
 
 
 
-    for i in range(random.randint(2, 10)):
+    for i in range(random.randint(2, int((rows*colms)/70))):
         if len(add_point) > 3:
             new_main_point = random.randint(-4, -1)
         else:
