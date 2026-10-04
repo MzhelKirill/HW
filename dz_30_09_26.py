@@ -1,6 +1,5 @@
 import random
 
-#col, ro = 0, 0
 
 try:
     rows, colms = int(input("размеры поля шир (больше 10)")), int(input("размеры поля выс (больше 10)"))
@@ -72,7 +71,7 @@ def island_gen():
     count = 0
 
     while True:
-        cords = [random.randint(3, rows - 4), random.randint(3, colms - 4)]
+        cords = [random.randint(3, colms - 4), random.randint(3, rows - 4)]
         if not(cords in add_point_all_islands):
             add_point.append(cords)
 
@@ -146,5 +145,4 @@ for row in matrix:
     print()
 
 print(islands_count)
-
 
