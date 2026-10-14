@@ -1,46 +1,52 @@
+import json
+
 users = {}
 pizzas_1 = {
-1: "Маргарита" "500",
-2: "Пепперони" "600",
-3: "Четыре сыра" "450",
-4: "Гавайская" "700",
-5: "Мясная" "668"
+    1: "Маргарита" "500",
+    2: "Пепперони" "600",
+    3: "Четыре сыра" "450",
+    4: "Гавайская" "700",
+    5: "Мясная" "668"
 }
 pizzas_2 = {
-1: "Четыре сезона" "525",
-2: "Карбонара" "599",
-3: "Пицца с морепродуктами" "499",
-4: "Пицца с тунцом" "625",
-5: "Ветчина и грибы" "550"
+    1: "Четыре сезона" "525",
+    2: "Карбонара" "599",
+    3: "Пицца с морепродуктами" "499",
+    4: "Пицца с тунцом" "625",
+    5: "Ветчина и грибы" "550"
 }
 pizzas_3 = {
-1: "Цезарь" "479",
-2: "Барбекю" "750",
-3: "Римская пицца" "600",
-4: "Грибная пицца" "733",
-5: "Вегетарианская" "999"
+    1: "Цезарь" "479",
+    2: "Барбекю" "750",
+    3: "Римская пицца" "600",
+    4: "Грибная пицца" "733",
+    5: "Вегетарианская" "999"
 }
-
 
 try:
 
+    def admin():
+        login, password = input("entry login --- "), input("entry password")
+
+
 
     def get_user_inf(user_number):
-        user_name = input(f"введите имя посетителя номер: {user_number+1} --- ")
-        user_age = int(input(f"введите возраст посетителя номер: {user_number+1} --- "))
+        user_name = input(f"введите имя посетителя номер: {user_number + 1} --- ")
+        user_age = int(input(f"введите возраст посетителя номер: {user_number + 1} --- "))
 
         return {user_number: {"name": user_name,
-                "age": user_age
-                }}
+                              "age": user_age
+                              }}
 
-    def main():
+
+    def make_order():
         users_count = int(input("сколько друзей вы взяли с собой --- "))
         if users_count > 0:
             for user_num in range(users_count):
                 users.update(get_user_inf(user_num))
 
             for key in users:
-                print(f"{key+1} : {users[key]}")
+                print(f"{key + 1} : {users[key]}")
 
             for key in users:
                 if users[key]["age"] <= 18:
@@ -82,7 +88,7 @@ try:
 2. Барбекю 750р
 
 3. Римская пицца 600р
-                    
+
 4. Грибная пицца 733р
 
 5. Вегетарианская 999р
@@ -91,11 +97,10 @@ try:
                 else:
                     print("введи число из меню")
 
-
                 if user_choice in [_ for _ in range(1, 6)]:
                     if users[key]["age"] <= 18:
                         users[key].update({"pizza": pizzas_1[user_choice]})
-                    elif users[key]["age"]  > 18 and users[key]["age"] <= 50:
+                    elif users[key]["age"] > 18 and users[key]["age"] <= 50:
                         users[key].update({"pizza": pizzas_2[user_choice]})
                     elif users[key]["age"] > 50:
                         users[key].update({"pizza": pizzas_3[user_choice]})
@@ -112,7 +117,7 @@ try:
 
         print("ваше меню")
         for key in users:
-            print(f"для {users[key]["name"]} : {users[key]["pizza"][:-3]}")
+            print(f"для {users[key]['name']} : {users[key]['pizza'][:-3]}")
 
         pay_price = 0
         for key in users:
@@ -135,17 +140,45 @@ try:
                     print("недостаточно средств")
                     return 2
                 else:
-                    print(f"приятного аппетита!!! ваша сдача {cash-pay_price}")
+                    print(f"приятного аппетита!!! ваша сдача {cash - pay_price}")
                     return 1
+
+
 
         print(users)
 
 
+    make_order()
 
-    main()
-
+    with open("orders.json", "w", encoding="utf-8") as file:
+        json.dump(users, file, ensure_ascii=False, indent=4)
 
 except ValueError:
     print("что то пошло не так")
+
+
+while True:
+    try:
+        choice = int(input("""
+1. make an order
+2. remove the order
+3. entry by admin
+4. exit
+"""))
+        if choice == 1:
+            make_order()
+        elif choice == 2:
+            user_del_name = input("введи имя чтобы удалить его заказ --- ")
+            del users[int(user_del_name)]
+        elif choice == 3:
+            admin()
+            with open("orders.json", "w", encoding="utf-8") as file:
+                json.dump(users, file, ensure_ascii=False, indent=4)
+    except ValueError:
+        print("введи число от 1 до 4")
+
+
+
+
 
 
