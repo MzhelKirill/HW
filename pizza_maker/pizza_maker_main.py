@@ -1,31 +1,52 @@
 import json
+import asyncio
 
+from calculator.calculator_func import product
+
+cheese = 5000
 order = {}
 pizzas_1 = {
-    1: ["Маргарита", 500],
-    2: ["Пепперони", 600],
-    3: ["Четыре сыра", 450],
-    4: ["Гавайская", 700],
-    5: ["Мясная", 668]
+    1: ["Маргарита", 500, {"сыр": 1}],
+    2: ["Пепперони", 600, {"сыр": 1}],
+    3: ["Четыре сыра", 450, {"сыр": 5}],
+    4: ["Гавайская", 700, {"сыр": 1}],
+    5: ["Мясная", 668, {"сыр": 1}]
 }
 pizzas_2 = {
-    1: ["Четыре сезона", 525],
-    2: ["Карбонара", 599],
-    3: ["Пицца с морепродуктами", 499],
-    4: ["Пицца с тунцом", 625],
-    5: ["Ветчина и грибы", 550]
+    1: ["Четыре сезона", 525, {"сыр": 1}],
+    2: ["Карбонара", 599, {"сыр": 1}],
+    3: ["Пицца с морепродуктами", 499, {"сыр": 1}],
+    4: ["Пицца с тунцом", 625, {"сыр": 1}],
+    5: ["Ветчина и грибы", 550, {"сыр": 1}]
 }
 pizzas_3 = {
-    1: ["Цезарь", 479],
-    2: ["Барбекю", 750],
-    3: ["Римская пицца", 600],
-    4: ["Грибная пицца", 733],
-    5: ["Вегетарианская", 999]
+    1: ["Цезарь", 479, {"сыр": 1}],
+    2: ["Барбекю", 750, {"сыр": 1}],
+    3: ["Римская пицца", 600, {"сыр": 1}],
+    4: ["Грибная пицца", 733, {"сыр": 1}],
+    5: ["Вегетарианская", 999, {"сыр": 1}]
 }
 
 try:
 
-    def admin():
+    def decor_check(input_func):
+        def outer_func(price):
+            print(10*"*", end="")
+            input_func(price)
+            print(10*"*")
+        return outer_func
+
+    @decor_check
+    def print_check(price):
+        print(f"""
+чек
+продавец: --- ""
+цена --- {price}
+скидка 0%
+ИТОГО {price}р""")
+
+
+    async def admin():
         global order
         login, password = input("entry login --- "), input("entry password")
 
@@ -67,14 +88,13 @@ try:
                     else:
                         print("введите от 1 до 3")
 
-
                 elif admin_choice == '3':
                     break
                 else:
                     print("введите от 1 до 3")
 
 
-    def get_user_inf(user_number):
+    async def get_user_inf(user_number):
         user_name = input(f"введите имя посетителя номер: {user_number + 1} --- ")
         user_age = int(input(f"введите возраст посетителя номер: {user_number + 1} --- "))
 
@@ -84,11 +104,11 @@ try:
                               }}
 
 
-    def make_order():
+    async def make_order():
         users_count = int(input("сколько друзей вы взяли с собой --- "))
         if users_count > 0:
             for user_num in range(users_count):
-                order.update(get_user_inf(user_num))
+                order.update(await get_user_inf(user_num))
 
             for key in order:
                 print(f"{key + 1} : {order[key]}")
@@ -164,8 +184,10 @@ try:
         for key in order:
             print(f"для {order[key]['name']} : {order[key]['pizza'][0]}")
 
+        cheese_price = 0
         pay_price = 0
         for key in order:
+            cheese_price += int(order[key]["pizza"][2]["сыр"])
             pay_price += int(order[key]["pizza"][1])
         pay = int(input(f"""
 способ оплаты:
@@ -181,8 +203,16 @@ try:
                     data = json.load(file)
                     length = len(data)
                     data.update({length: order})
-                    with open("orders.json", "w", encoding="utf-8") as file:
-                        json.dump(data, file, ensure_ascii=False, indent=4)
+                with open("orders.json", "w", encoding="utf-8") as file:
+                    json.dump(data, file, ensure_ascii=False, indent=4)
+                with open("products.json", "r", encoding="utf-8") as file_1:
+                    data = json.load(file_1)
+                with open("products.json", "w", encoding="utf-8") as file_1:
+                    data["сыр"] = data["сыр"] - cheese_price
+                    json.dump(data, file_1, ensure_ascii=False, indent=4)
+
+
+                print_check(pay_price)
                 print("оплата прошла успешно")
                 return 1
             elif pay == 2:
@@ -194,13 +224,18 @@ try:
                     with open("orders.json", "r", encoding="utf-8") as file:
                         data = json.load(file)
                         length = len(data)
-                        data.update(order)
-                        with open("orders.json", "w", encoding="utf-8") as file:
-                            json.dump({length: data}, file, ensure_ascii=False, indent=4)
+                        data.update({length: order})
+                    with open("orders.json", "w", encoding="utf-8") as file:
+                        json.dump(data, file, ensure_ascii=False, indent=4)
+                    with open("products.json", "r", encoding="utf-8") as file_1:
+                        data = json.load(file_1)
+                    with open("products.json", "w", encoding="utf-8") as file_1:
+                        data["сыр"] = data["сыр"] - cheese_price
+                        json.dump(data, file_1, ensure_ascii=False, indent=4)
+                    print_check(pay_price)
                     print(f"приятного аппетита!!! ваша сдача {cash - pay_price}")
+
                     return 1
-
-
 
         print(order)
 
@@ -212,26 +247,24 @@ except ValueError:
     print("что то пошло не так")
 
 
-while True:
-    try:
-        choice = input("""
+async def main():
+    while True:
+        try:
+            choice = input("""
 1. make an order
 2. entry by admin
 3. exit
 """)
-        if choice == '1':
-            make_order()
-        elif choice == '2':
-            admin()
-        elif choice == '3':
-            break
-        elif choice == '5':
-            print(order)
-    except ValueError:
-        print("введи число от 1 до 4")
+            if choice == '1':
+                await make_order()
+            elif choice == '2':
+                await admin()
+            elif choice == '3':
+                break
+            elif choice == '5':
+                print(order)
+        except ValueError:
+            print("введи число от 1 до 4")
 
 
-
-
-
-
+asyncio.run(main())
