@@ -1,7 +1,6 @@
 import json
 import asyncio
 
-from calculator.calculator_func import product
 
 cheese = 5000
 order = {}
@@ -10,21 +9,24 @@ pizzas_1 = {
     2: ["Пепперони", 600, {"сыр": 1}],
     3: ["Четыре сыра", 450, {"сыр": 5}],
     4: ["Гавайская", 700, {"сыр": 1}],
-    5: ["Мясная", 668, {"сыр": 1}]
+    5: ["Мясная", 668, {"сыр": 1}],
+    6: ["сок яблочный", 668, {"яблоко": 1}]
 }
 pizzas_2 = {
     1: ["Четыре сезона", 525, {"сыр": 1}],
     2: ["Карбонара", 599, {"сыр": 1}],
     3: ["Пицца с морепродуктами", 499, {"сыр": 1}],
     4: ["Пицца с тунцом", 625, {"сыр": 1}],
-    5: ["Ветчина и грибы", 550, {"сыр": 1}]
+    5: ["Ветчина и грибы", 550, {"сыр": 1}],
+    6: ["кола", 668, {"кола": 1}]
 }
 pizzas_3 = {
     1: ["Цезарь", 479, {"сыр": 1}],
     2: ["Барбекю", 750, {"сыр": 1}],
     3: ["Римская пицца", 600, {"сыр": 1}],
     4: ["Грибная пицца", 733, {"сыр": 1}],
-    5: ["Вегетарианская", 999, {"сыр": 1}]
+    5: ["Вегетарианская", 999, {"сыр": 1}],
+    6: ["водичка из под пельменей", 668, {"кола": 1}]
 }
 
 try:
@@ -115,54 +117,27 @@ try:
 
             for key in order:
                 if order[key]["age"] <= 18:
-                    user_choice = int(input(f"""
-Какую пиццу выберет {order[key]["name"]}
-
-1. Маргарита 500р
-
-2. Пепперони 600р
-
-3. Четыре сыра 450р
-
-4. Гавайская 700р
-
-5. Мясная 668р
---- """))
+                    print(f"Какую пиццу выберет {order[key]["name"]}")
+                    for i in pizzas_1:
+                        print(f"{i}. {pizzas_1[i][0]} - {pizzas_1[i][1]}р")
+                    user_choice = int(input("твой выбор из меню --- "))
 
                 elif order[key]["age"] > 18 and order[key]["age"] <= 50:
-                    user_choice = int(input(f"""
-Какую пиццу выберет {order[key]["name"]}
-
-1. Четыре сезона 525р
-
-2. Карбонара 599р
-
-3. Пицца с морепродуктами 499р
-
-4. Пицца с тунцом 625р
-
-5. Ветчина и грибы 550р
---- """))
+                    print(f"Какую пиццу выберет {order[key]["name"]}")
+                    for i in pizzas_2:
+                        print(f"{i}. {pizzas_2[i][0]} - {pizzas_2[i][1]}р")
+                    user_choice = int(input("твой выбор из меню --- "))
 
                 elif order[key]["age"] > 50:
-                    user_choice = int(input(f"""
-Какую пиццу выберет {order[key]["name"]}
-
-1. Цезарь 479р
-
-2. Барбекю 750р
-
-3. Римская пицца 600р
-
-4. Грибная пицца 733р
-
-5. Вегетарианская 999р
---- """))
+                    print(f"Какую пиццу выберет {order[key]["name"]}")
+                    for i in pizzas_3:
+                        print(f"{i}. {pizzas_3[i][0]} - {pizzas_3[i][1]}р")
+                    user_choice = int(input("твой выбор из меню --- "))
 
                 else:
                     print("введи число из меню")
 
-                if user_choice in [_ for _ in range(1, 6)]:
+                if user_choice in [_ for _ in range(1, 7)]:
                     if order[key]["age"] <= 18:
                         order[key]["pizza"] = pizzas_1[user_choice]
                     elif order[key]["age"] > 18 and order[key]["age"] <= 50:
@@ -187,7 +162,7 @@ try:
         cheese_price = 0
         pay_price = 0
         for key in order:
-            cheese_price += int(order[key]["pizza"][2]["сыр"])
+            cheese_price += int(order[key]["pizza"][2]["сыр"]) if "сыр" in order[key]["pizza"][2] else 0
             pay_price += int(order[key]["pizza"][1])
         pay = int(input(f"""
 способ оплаты:
@@ -227,8 +202,8 @@ try:
                         data.update({length: order})
                     with open("orders.json", "w", encoding="utf-8") as file:
                         json.dump(data, file, ensure_ascii=False, indent=4)
-                    with open("products.json", "r", encoding="utf-8") as file_1:
-                        data = json.load(file_1)
+                    with open("products.json", "r", encoding="utf-8") as file1:
+                        data = json.load(file1)
                     with open("products.json", "w", encoding="utf-8") as file_1:
                         data["сыр"] = data["сыр"] - cheese_price
                         json.dump(data, file_1, ensure_ascii=False, indent=4)
