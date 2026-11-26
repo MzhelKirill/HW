@@ -31,6 +31,19 @@ pizzas_3 = {
 
 try:
 
+    def key_rename(dict1, key):
+
+        lst1 = [i for i in dict1]
+        lst2 = [dict1[i] for i in dict1]
+        res = {}
+        for i in range(len(dict1)):
+            if lst1[i] == key:
+                res.update({int(lst1[i]) - 1: lst2[i]})
+            else:
+                res.update({lst1[i]: lst2[i]})
+        return res
+
+
     def decor_check(input_func):
         def outer_func(price):
             print(10*"*", end="")
@@ -76,11 +89,17 @@ try:
 2. удалить все заказы
 """)
                     if del_choise == "1":
-                        user_del_name = input("введи имя чтобы удалить его заказ --- ")
-                        if user_del_name in order:
-                            del order[int(user_del_name)]
+                        user_del_index = input("введи индекс чтобы удалить его заказ --- ")
+                        with open('orders.json', 'r', encoding='utf-8') as file1:
+                            data = json.load(file1)
+                            if user_del_index in data:
+                                del data[user_del_index]
+                            for i in data:
+                                if i > user_del_index:
+                                    data = key_rename(data, i)
+
                         with open("orders.json", "w", encoding="utf-8") as file:
-                            json.dump(order, file, ensure_ascii=False, indent=4)
+                            json.dump(data, file, ensure_ascii=False, indent=4)
                     elif del_choise == "2":
                         order = {}
                         with open("orders.json", "w", encoding="utf-8") as file:
